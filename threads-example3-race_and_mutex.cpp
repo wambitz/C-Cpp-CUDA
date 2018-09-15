@@ -7,9 +7,10 @@ std::mutex mutx;
 
 void shared_print(std::string msg, int id)
 {
-    mutx.lock();
+    std::lock_guard<std::mutex> guard(mutx); // RAII
+    // mutx.lock();
     std::cout << msg << id << std::endl;
-    mutx.unlock();
+    // mutx.unlock();
 }
 
 void function1()
