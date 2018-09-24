@@ -8,7 +8,7 @@
             "type": "shell",
             "command": "g++.exe",
             "args" : [
-                "-g", "${file}"
+                "-Wall", "-g", "${file}"
             ],
             "group": {
                 "kind": "build",
