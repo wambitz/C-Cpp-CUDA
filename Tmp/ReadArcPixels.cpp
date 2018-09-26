@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <functional>
 #include <cmath>
+#include <chrono>
 
 // using namespace std; 
 #define N_SLICES (128u)
@@ -38,22 +39,25 @@ void LoadTestPattern(const std::string filename, std::array<short int, N_SLICES>
 // unsigned char RandomRotation(std::array<short int, N_SLICES>& ref_test_pattern)
 void RandomRotation(std::array<short int, N_SLICES>& ref_test_pattern)
 {
-    std::random_device rd;                         // obtain a random number from hardware
-    std::mt19937 eng(rd());                        // seed the generator
-    std::uniform_int_distribution<> distr(0, 127); // define the range
-    // unsigned char offset;
+    // Define random generator with uniform integer distribution
+    const int lower_limit = 0;
+    const int upper_limit = 127;
+
+    uint64_t seed = std::random_device{}() | std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 eng(seed);                        // seed the generator
+    std::uniform_int_distribution<> distr(lower_limit, upper_limit); // define the range
+    unsigned char offset = distr(eng);
 
     // simple rotation to the left
-    std::rotate(std::begin(ref_test_pattern), begin(ref_test_pattern) + distr(eng) /* + offset */, std::end(ref_test_pattern));
+    std::rotate(std::begin(ref_test_pattern), begin(ref_test_pattern) + offset, std::end(ref_test_pattern));
     // return offset;
 }
 
 void PixelRotation(short int * pixel_array, unsigned char offset)
 {
     // simple rotation to the right
-    std::rotate(pixel_array, pixel_array - offset, pixel_array+N_SLICES);
+    std::rotate(pixel_array, pixel_array+N_SLICES - offset, pixel_array+N_SLICES);
 }
-
 
 template<std::size_t SIZE>
 void AddGaussianNoiseToArcPixels(std::array<short int, SIZE>& pixel_array, const std::array<short int, N_SLICES>& reference_pixel)
@@ -61,29 +65,21 @@ void AddGaussianNoiseToArcPixels(std::array<short int, SIZE>& pixel_array, const
     // Define random generator with Gaussian distribution
     const float mean   = 0.0;
     const float stddev = 2.0;
-    auto dist = std::bind(std::normal_distribution<float>{mean, stddev},
-                          std::mt19937(std::random_device{}()));
+
+    // auto distr = std::bind(std::normal_distribution<float>{mean, stddev},
+    //                        std::mt19937(std::random_device{}()));
+
+    uint64_t seed = std::random_device{}() | std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 eng(seed);                              // seed the generator
+    std::normal_distribution<float> distr(mean, stddev); // define the range
+    // unsigned char offset = distr(eng);
 
     for (const auto& slice : reference_pixel) 
     {
-        pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*0)] = rint(slice+dist());
-        pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*1)] = rint(slice+dist());
-        pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*2)] = rint(slice+dist());
-        pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*3)] = rint(slice+dist());
-    }
-}
-
-void AddGaussianNoiseToPixel(std::array<short int, N_SLICES>& pixel_array, const std::array<short int, N_SLICES>& reference_pixel)
-{
-    // Define random generator with Gaussian distribution
-    const float mean   = 0.0;
-    const float stddev = 2.0;
-    auto dist = std::bind(std::normal_distribution<float>{mean, stddev},
-                          std::mt19937(std::random_device{}()));
-
-    for (const auto& slice : reference_pixel) 
-    {
-        pixel_array[&slice-&reference_pixel[0]] = rint(slice+dist());
+        pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*0)] = rint(slice+distr(eng));
+        pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*1)] = rint(slice+distr(eng));
+        pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*2)] = rint(slice+distr(eng));
+        pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*3)] = rint(slice+distr(eng));
     }
 }
 
@@ -113,14 +109,20 @@ void WriteToStandardPixel(short int * pixel_array)
     }
 }
 
-short int FindMinElementInPixel(short int * pixel_array)
+std::array<short int, 1>::iterator FindMinElementInPixel(short int * pixel_array)
 {
-    return *(std::min_element(pixel_array, pixel_array+N_SLICES));
+    return std::min_element(pixel_array, pixel_array+N_SLICES);
 }
 
-short int FindMaxElementInPixel(short int * pixel_array)
+std::array<short int, 1>::iterator FindMaxElementInPixel(short int * pixel_array)
 {
-    return *(std::max_element(pixel_array, pixel_array+N_SLICES));
+    return std::max_element(pixel_array, pixel_array+N_SLICES);
+}
+
+template<std::size_t SIZE>
+unsigned char GetOffset(std::array<short int, SIZE>& pixel_array, std::array<short int, 1>::iterator it)
+{
+    return std::distance(std::begin(pixel_array), it);
 }
 
 
@@ -139,27 +141,42 @@ int main(int argc, char const *argv[])
     std::array<short int, N_SLICES> arc_pixel4{0};
 
     std::array<short int, N_SLICES*4> arc_pixels;
+
+    // Find min values for each arc_pixel 
+    // array of iterators
+    std::array<std::array<short int, 1>::iterator, 4> peaks{0};
+    unsigned char offset = 0;
         
     LoadTestPattern(filename, test_pattern);
     WriteToStandardPixel(raw_data.data());
 
     // unsigned short offset = RandomRotation(test_pattern);
     RandomRotation(test_pattern);
-    // std:: cout << "Shift offset: " << offset << std::endl;
-    // PixelRotation(raw_data.data(), offset);
-
+   
     AddGaussianNoiseToArcPixels(arc_pixels, test_pattern);
+
+    for (auto const& i : {0, 1, 2, 3} )
+    {
+        peaks[i] = FindMinElementInPixel(arc_pixels.data()+(N_SLICES*i));
+        std::cout << "Minumum value in arc_pixel["<< i<< "]: " << *peaks[i] << std::endl;
+        // std::cout << "Index of arc_pixel[" << i << "]: " << 
+    }
+
+    // offset and rotation for S1 only
+    offset = GetOffset(arc_pixels, peaks[0]);
+    std:: cout << "Shift offset: " << static_cast<unsigned short int>(offset) << std::endl;
+    PixelRotation(raw_data.data(), offset);
         
+    //  Write array elements to file for testing porpuses     
     for (unsigned int i = 0; i < N_SLICES; i++)
     {
         arc_pixel1[i] = arc_pixels[i+(N_SLICES*0)];
         arc_pixel2[i] = arc_pixels[i+(N_SLICES*1)];
         arc_pixel3[i] = arc_pixels[i+(N_SLICES*2)];
         arc_pixel4[i] = arc_pixels[i+(N_SLICES*3)];
-
     }
 
-    // Write vector elements to file for testing porpuses
+    // Arcpixels wiht noise Write vector elements to file for testing porpuses
     std::ofstream output_file[4];
 
     for (int i : {0, 1, 2, 3})
@@ -167,7 +184,7 @@ int main(int argc, char const *argv[])
         output_file[i].open ("Tmp/arc_pixel" + std::to_string(i+1) + ".csv");
     }
 
-    for (int j = 0; j < static_cast<int>(test_pattern.size()); j++)
+    for (unsigned int j = 0; j < static_cast<unsigned int>(test_pattern.size()); j++)
     {
         output_file[0] << arc_pixel1[j] << std::endl;
         output_file[1] << arc_pixel2[j] << std::endl;
@@ -180,7 +197,7 @@ int main(int argc, char const *argv[])
         output_file[i].close();
     }
 
-    // Write vector elements to file for testing porpuses
+    // Shifted Std pixels Write array elements to file for testing porpuses
     std::ofstream stdpixels_output_file;
     stdpixels_output_file.open ("Tmp/stdpixel1_shifted.csv");
     
@@ -189,16 +206,19 @@ int main(int argc, char const *argv[])
         stdpixels_output_file << raw_data[j] << std::endl;
     }
 
-    // Find min values for each arc_pixel 
-    std::array<int, 4> peaks{0};
-
-    for (auto i : {0, 1, 2, 3} )
-    {
-        peaks[i] = FindMinElementInPixel(arc_pixels.data()+(N_SLICES*i));
-        std::cout << "Minumum value in arc_pixel["<< i<< "]: " << peaks[i] << std::endl;
-    }
     return 0;
 }
+
+// template<std::size_t SIZE>
+// short int FindMinElementInPixel(std::array<short int, SIZE>* pixel_array)
+// {
+//     return *(std::min_element(pixel_array, pixel_array+N_SLICES));
+// }
+
+// short int FindMinElementInPixel(std::vector<short int>::iterator iter)
+// {
+//     return *(std::min_element(iter, iter+N_SLICES));
+// }
 
 // short int FindMinElementInPixel(const std::array<short int, N_SLICES>& pixel_array)
 // {
