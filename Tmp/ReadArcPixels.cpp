@@ -39,9 +39,11 @@ void LoadTestPattern(const std::string filename, std::array<short int, N_SLICES>
 // unsigned char RandomRotation(std::array<short int, N_SLICES>& ref_test_pattern)
 void RandomRotation(std::array<short int, N_SLICES>& ref_test_pattern)
 {
+    
     // Define random generator with uniform integer distribution
     const int lower_limit = 0;
     const int upper_limit = 127;
+
 
     uint64_t seed = std::random_device{}() | std::chrono::system_clock::now().time_since_epoch().count();
     std::mt19937 eng(seed);                        // seed the generator
@@ -53,7 +55,7 @@ void RandomRotation(std::array<short int, N_SLICES>& ref_test_pattern)
     // return offset;
 }
 
-void PixelRotation(short int * pixel_array, unsigned char offset)
+void PixelRotation(std::array<short int, 1>::iterator pixel_array, unsigned char offset)
 {
     // simple rotation to the right
     std::rotate(pixel_array, pixel_array+N_SLICES - offset, pixel_array+N_SLICES);
@@ -83,6 +85,7 @@ void AddGaussianNoiseToArcPixels(std::array<short int, SIZE>& pixel_array, const
     }
 }
 
+// test function
 void WriteToStandardPixel(short int * pixel_array)
 {
     // FILE handling
@@ -109,20 +112,19 @@ void WriteToStandardPixel(short int * pixel_array)
     }
 }
 
-std::array<short int, 1>::iterator FindMinElementInPixel(short int * pixel_array)
+std::array<short int, 1>::iterator FindMinElementInPixel(std::array<short int, 1>::iterator pixel_array)
 {
     return std::min_element(pixel_array, pixel_array+N_SLICES);
 }
 
-std::array<short int, 1>::iterator FindMaxElementInPixel(short int * pixel_array)
+std::array<short int, 1>::iterator FindMaxElementInPixel(std::array<short int, 1>::iterator pixel_array)
 {
     return std::max_element(pixel_array, pixel_array+N_SLICES);
 }
 
-template<std::size_t SIZE>
-unsigned char GetOffset(std::array<short int, SIZE>& pixel_array, std::array<short int, 1>::iterator it)
+unsigned char GetOffset(std::array<short int, 1>::iterator pixel_array, std::array<short int, 1>::iterator it)
 {
-    return std::distance(std::begin(pixel_array), it);
+    return std::distance(pixel_array, it);
 }
 
 
@@ -141,11 +143,13 @@ int main(int argc, char const *argv[])
     std::array<short int, N_SLICES> arc_pixel4{0};
 
     std::array<short int, N_SLICES*4> arc_pixels;
+    
 
     // Find min values for each arc_pixel 
     // array of iterators
     std::array<std::array<short int, 1>::iterator, 4> peaks{0};
-    unsigned char offset = 0;
+    std::array<short int, 4>		                  offset{0};
+    // unsigned char offset = 0;
         
     LoadTestPattern(filename, test_pattern);
     WriteToStandardPixel(raw_data.data());
@@ -157,15 +161,23 @@ int main(int argc, char const *argv[])
 
     for (auto const& i : {0, 1, 2, 3} )
     {
-        peaks[i] = FindMinElementInPixel(arc_pixels.data()+(N_SLICES*i));
+        peaks[i] = FindMinElementInPixel(std::begin(arc_pixels)+(N_SLICES*i));
         std::cout << "Minumum value in arc_pixel["<< i<< "]: " << *peaks[i] << std::endl;
         // std::cout << "Index of arc_pixel[" << i << "]: " << 
     }
 
+    for (auto const& i : {0, 1, 2, 3} )
+    {
+        // peaks[i] = FindMinElementInPixel(arc_pixels.data()+(N_SLICES*i));
+        offset[i] = GetOffset(std::begin(arc_pixels) + (i * N_SLICES), peaks[i]);
+        std::cout << "Offset in arc_pixel["<< i<< "]: " << offset[i] << std::endl;
+        // std::cout << "Index of arc_pixel[" << i << "]: " << 
+    }
+
     // offset and rotation for S1 only
-    offset = GetOffset(arc_pixels, peaks[0]);
-    std:: cout << "Shift offset: " << static_cast<unsigned short int>(offset) << std::endl;
-    PixelRotation(raw_data.data(), offset);
+    // offset = GetOffset(arc_pixels, peaks[0]);
+    // std:: cout << "Shift offset: " << static_cast<unsigned short int>(offset) << std::endl;
+    PixelRotation(std::begin(raw_data), offset[0]);
         
     //  Write array elements to file for testing porpuses     
     for (unsigned int i = 0; i < N_SLICES; i++)
