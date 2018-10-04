@@ -61,12 +61,13 @@ void PixelRotation(std::array<short int, 1>::iterator pixel_array, unsigned char
     std::rotate(pixel_array, pixel_array+N_SLICES - offset, pixel_array+N_SLICES);
 }
 
-template<std::size_t SIZE>
-void AddGaussianNoiseToArcPixels(std::array<short int, SIZE>& pixel_array, const std::array<short int, N_SLICES>& reference_pixel)
+// template<std::size_t SIZE>
+// void AddGaussianNoiseToArcPixels(std::array<short int, SIZE>& pixel_array, const std::array<short int, N_SLICES>& reference_pixel)
+void AddGaussianNoiseToArcPixels(std::array<short int, 1>::iterator pixel_array, const std::array<short int, N_SLICES>& reference_pixel)
 {
     // Define random generator with Gaussian distribution
-    const float mean   = 0.0;
-    const float stddev = 2.0;
+    const float mean    {0.0};
+    const float stddev  {2.0};
 
     // auto distr = std::bind(std::normal_distribution<float>{mean, stddev},
     //                        std::mt19937(std::random_device{}()));
@@ -78,10 +79,15 @@ void AddGaussianNoiseToArcPixels(std::array<short int, SIZE>& pixel_array, const
 
     for (const auto& slice : reference_pixel) 
     {
-        pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*0)] = rint(slice+distr(eng));
-        pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*1)] = rint(slice+distr(eng));
-        pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*2)] = rint(slice+distr(eng));
-        pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*3)] = rint(slice+distr(eng));
+        // pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*0)] = rint(slice+distr(eng));
+        // pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*1)] = rint(slice+distr(eng));
+        // pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*2)] = rint(slice+distr(eng));
+        // pixel_array[(&slice-&reference_pixel[0])+(N_SLICES*3)] = rint(slice+distr(eng));
+        *(pixel_array+(N_SLICES*0)) = rint(slice+distr(eng));
+        *(pixel_array+(N_SLICES*1)) = rint(slice+distr(eng));
+        *(pixel_array+(N_SLICES*2)) = rint(slice+distr(eng));
+        *(pixel_array+(N_SLICES*3)) = rint(slice+distr(eng));
+        pixel_array++;
     }
 }
 
@@ -157,7 +163,7 @@ int main(int argc, char const *argv[])
     // unsigned short offset = RandomRotation(test_pattern);
     RandomRotation(test_pattern);
    
-    AddGaussianNoiseToArcPixels(arc_pixels, test_pattern);
+    AddGaussianNoiseToArcPixels(std::begin(arc_pixels), test_pattern);
 
     for (auto const& i : {0, 1, 2, 3} )
     {
