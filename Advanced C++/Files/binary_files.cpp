@@ -15,7 +15,8 @@ struct Person
 
 int main(int argc, char const *argv[])
 {
-    Person someone = {"Frodo", 220, 0.8};
+    Person Frodo = {"Frodo", 220, 0.8};
+    Person Sam = {"Sam", 420, 15.1};
 
     // cout << sizeof(Person) << endl;
     string filename = "Advanced C++/Files/test.bin";
@@ -28,7 +29,8 @@ int main(int argc, char const *argv[])
     if (outputfile.is_open())
     {
         // outputfile.write((char *)&someone, sizeof(Person));
-        outputfile.write(reinterpret_cast<char *>(&someone), sizeof(Person));
+        outputfile.write(reinterpret_cast<char *>(&Frodo), sizeof(Person));
+        outputfile.write(reinterpret_cast<char *>(&Sam), sizeof(Person));
         outputfile.close();
     }
     else
@@ -38,7 +40,7 @@ int main(int argc, char const *argv[])
 
     ///// Read binany file /////
 
-    Person someone_else = {};
+    Person the_chose_one, someone_else;
 
     ifstream inputfile;
     inputfile.open(filename, ios::binary);
@@ -46,6 +48,7 @@ int main(int argc, char const *argv[])
     if (inputfile.is_open())
     {
         // outputfile.write((char *)&someone, sizeof(Person));
+        inputfile.read(reinterpret_cast<char *>(&the_chose_one), sizeof(Person));
         inputfile.read(reinterpret_cast<char *>(&someone_else), sizeof(Person));
         inputfile.close();
     }
@@ -54,6 +57,7 @@ int main(int argc, char const *argv[])
         cout << "Could not create file: " + filename << endl;
     }
 
+    cout << the_chose_one.name << ", " << the_chose_one.age << ", " << the_chose_one.height << endl;
     cout << someone_else.name << ", " << someone_else.age << ", " << someone_else.height << endl;
     
     return 0;
