@@ -10,8 +10,9 @@
 #define N_SLICES (128u)
 #define RAW_DATA_SIZE (32 * 128 * 128)
 // Private method to read test pattern
-void LoadTestPattern(const std::string filename, std::array<short int, N_SLICES>& testpattern)
+void LoadTestPattern(const std::string filename, std::array<unsigned short int, N_SLICES>& testpattern)
 {
+
     // FILE handling
     std::ifstream testpattern_file;
     testpattern_file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -25,7 +26,7 @@ void LoadTestPattern(const std::string filename, std::array<short int, N_SLICES>
         while (testpattern_file.good())
         {
             std::getline(testpattern_file, slice);
-            testpattern[i] = static_cast<short int>(std::stoi(slice));
+            testpattern[i] = static_cast<unsigned short int>(std::stoi(slice) + 190);
             i++;
         }
         testpattern_file.close();
@@ -37,7 +38,7 @@ void LoadTestPattern(const std::string filename, std::array<short int, N_SLICES>
 }
 
 // unsigned char RandomRotation(std::array<short int, N_SLICES>& ref_test_pattern)
-void RandomRotation(std::array<short int, N_SLICES>& ref_test_pattern)
+void RandomRotation(std::array<unsigned short int, N_SLICES>& ref_test_pattern)
 {
     
     // Define random generator with uniform integer distribution
@@ -55,7 +56,7 @@ void RandomRotation(std::array<short int, N_SLICES>& ref_test_pattern)
     // return offset;
 }
 
-void PixelRotation(std::array<short int, 1>::iterator pixel_array, unsigned char offset)
+void PixelRotation(std::array<unsigned short int, 1>::iterator pixel_array, unsigned char offset)
 {
     // simple rotation to the right
     std::rotate(pixel_array, pixel_array+N_SLICES - offset, pixel_array+N_SLICES);
@@ -63,7 +64,7 @@ void PixelRotation(std::array<short int, 1>::iterator pixel_array, unsigned char
 
 // template<std::size_t SIZE>
 // void AddGaussianNoiseToArcPixels(std::array<short int, SIZE>& pixel_array, const std::array<short int, N_SLICES>& reference_pixel)
-void AddGaussianNoiseToArcPixels(std::array<short int, 1>::iterator pixel_array, const std::array<short int, N_SLICES>& reference_pixel)
+void AddGaussianNoiseToArcPixels(std::array<unsigned short int, 1>::iterator pixel_array, const std::array<unsigned short int, N_SLICES>& reference_pixel)
 {
     // Define random generator with Gaussian distribution
     const float mean    {0.0};
@@ -92,7 +93,7 @@ void AddGaussianNoiseToArcPixels(std::array<short int, 1>::iterator pixel_array,
 }
 
 // test function
-void WriteToStandardPixel(short int * pixel_array)
+void WriteToStandardPixel(unsigned short int * pixel_array)
 {
     // FILE handling
     std::ifstream stdpixel_file;
@@ -107,7 +108,7 @@ void WriteToStandardPixel(short int * pixel_array)
         while (stdpixel_file.good())
         {
             std::getline(stdpixel_file, slice);
-            pixel_array[i] = static_cast<short int>(std::stoi(slice));
+            pixel_array[i] = static_cast<unsigned short int>(std::stoi(slice));
             i++;
         }
         stdpixel_file.close();
@@ -118,17 +119,17 @@ void WriteToStandardPixel(short int * pixel_array)
     }
 }
 
-std::array<short int, 1>::iterator FindMinElementInPixel(std::array<short int, 1>::iterator pixel_array)
+std::array<unsigned short int, 1>::iterator FindMinElementInPixel(std::array<unsigned short int, 1>::iterator pixel_array)
 {
     return std::min_element(pixel_array, pixel_array+N_SLICES);
 }
 
-std::array<short int, 1>::iterator FindMaxElementInPixel(std::array<short int, 1>::iterator pixel_array)
+std::array<unsigned short int, 1>::iterator FindMaxElementInPixel(std::array<unsigned short int, 1>::iterator pixel_array)
 {
     return std::max_element(pixel_array, pixel_array+N_SLICES);
 }
 
-unsigned char GetOffset(std::array<short int, 1>::iterator pixel_array, std::array<short int, 1>::iterator it)
+unsigned char GetOffset(std::array<unsigned short int, 1>::iterator pixel_array, std::array<unsigned short int, 1>::iterator it)
 {
     return std::distance(pixel_array, it);
 }
@@ -138,23 +139,23 @@ int main(int argc, char const *argv[])
 {
     // Data cube
     // unsinged int data_cube[DATA_CUBE_SIZE];
-    std::array<short int, RAW_DATA_SIZE> raw_data{0};
-    std::array<short int, N_SLICES> test_pattern{0};
+    std::array<unsigned short int, RAW_DATA_SIZE> raw_data{0};
+    std::array<unsigned short int, N_SLICES> test_pattern{0};
     std::string filename = "Tmp/ArcPixelTestPattern.csv";
     
     // arc pixels from special pixels
-    std::array<short int, N_SLICES> arc_pixel1{0};
-    std::array<short int, N_SLICES> arc_pixel2{0};
-    std::array<short int, N_SLICES> arc_pixel3{0};
-    std::array<short int, N_SLICES> arc_pixel4{0};
+    std::array<unsigned short int, N_SLICES> arc_pixel1{0};
+    std::array<unsigned short int, N_SLICES> arc_pixel2{0};
+    std::array<unsigned short int, N_SLICES> arc_pixel3{0};
+    std::array<unsigned short int, N_SLICES> arc_pixel4{0};
 
-    std::array<short int, N_SLICES*4> arc_pixels;
+    std::array<unsigned short int, N_SLICES*4> arc_pixels;
     
 
     // Find min values for each arc_pixel 
     // array of iterators
-    std::array<std::array<short int, 1>::iterator, 4> peaks{0};
-    std::array<short int, 4>		                  offset{0};
+    std::array<std::array<unsigned short int, 1>::iterator, 4> peaks{0};
+    std::array<unsigned short int, 4>		                  offset{0};
     // unsigned char offset = 0;
         
     LoadTestPattern(filename, test_pattern);
