@@ -40,7 +40,7 @@ int main(int argc, char const *argv[])
 
     ///// Read binany file /////
 
-    Person the_chose_one, someone_else;
+    Person the_chosen_one, someone_else;
 
     ifstream inputfile;
     inputfile.open(filename, ios::binary);
@@ -48,7 +48,7 @@ int main(int argc, char const *argv[])
     if (inputfile.is_open())
     {
         // outputfile.write((char *)&someone, sizeof(Person));
-        inputfile.read(reinterpret_cast<char *>(&the_chose_one), sizeof(Person));
+        inputfile.read(reinterpret_cast<char *>(&the_chosen_one), sizeof(Person));
         inputfile.read(reinterpret_cast<char *>(&someone_else), sizeof(Person));
         inputfile.close();
     }
@@ -57,7 +57,7 @@ int main(int argc, char const *argv[])
         cout << "Could not create file: " + filename << endl;
     }
 
-    cout << the_chose_one.name << ", " << the_chose_one.age << ", " << the_chose_one.height << endl;
+    cout << the_chosen_one.name << ", " << the_chosen_one.age << ", " << the_chosen_one.height << endl;
     cout << someone_else.name << ", " << someone_else.age << ", " << someone_else.height << endl;
     
     return 0;
