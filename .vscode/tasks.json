@@ -9,11 +9,38 @@
             "command": "g++.exe",
             "args" : [
                 "-Wall", "-g", "${file}"
+                // "-Wall", "-g", "Tmp/*.cpp -o"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Clang Builder",
+            "type": "shell",
+            "command": "C:/LLVM/build/bin/clang++.exe",
+            "args" : [
+                "-Wall", "-g", "${file}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Clang-Tidy Analizer",
+            "type": "shell",
+            "command": "C:/LLVM/build/bin/clang-tidy.exe",
+            "args" : [
+                "-checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus*", "${file}", "--", "std=c++14"
+                // "-header-filter=.*", "-system-headers", "-checks=modernize*", "${file}", "--", "std=c++14"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
         }
+
     ]
 }
