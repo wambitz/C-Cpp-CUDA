@@ -33,8 +33,10 @@
             "type": "shell",
             "command": "C:/LLVM/build/bin/clang-tidy.exe",
             "args" : [
-                "-checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus*", "${file}", "--", "std=c++14"
-                // "-header-filter=.*", "-system-headers", "-checks=modernize*", "${file}", "--", "std=c++14"
+                // "-checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus*", "${file}", "--", "std=c++14"
+                // "-header-filter=.*", "-system-headers", "-checks=modernize-*", "${file}", "--", "std=c++14", ">log.txt"
+                // "-header-filter=.* -checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus* -checks=modernize-*", "${file}", "--",  "std=c++14"
+                "-header-filter=.*", "-checks=modernize-*",  "${file}", "--",  "std=c++14"
             ],
             "group": {
                 "kind": "build",
