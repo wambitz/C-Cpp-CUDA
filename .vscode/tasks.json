@@ -4,6 +4,19 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "GCC BOOST",
+            "type": "shell",
+            "command": "g++.exe",
+            "args" : [
+                "-Wall", "-g", "-IC:/boost_1_69_0", "${file}"
+                // "-Wall", "-g", "Tmp/*.cpp -o"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "GCC Builder",
             "type": "shell",
             "command": "g++.exe",
