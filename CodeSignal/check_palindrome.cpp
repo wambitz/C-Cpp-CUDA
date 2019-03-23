@@ -4,28 +4,17 @@
 
 bool checkPalindrome(std::string inputString) 
 {
-    bool pair = inputString.size() % 2 == 0 ? true : false;
-    int middle = pair ? (inputString.size() / 2) - 1 : inputString.size() / 2;
-   
-    if (pair)
+    int i = 0;
+    int j = inputString.size() - 1;
+    
+    while (j > i)
     {
-        for (int i = 0; i <= middle; i++)
-        {
-            if (inputString[middle-i] != inputString[middle+1+i])
-            {
-                return false;
-            }
+        if (inputString[i] != inputString[j])
+        {   
+            return false;
         }
-    }
-    else
-    {
-        for (int i = 0; i <= middle; i++)
-        {
-            if (inputString[middle-i] != inputString[middle+i])
-            {   
-                return false;
-            }
-        }
+        i++;
+        j--;
     }
     return true;
 }
