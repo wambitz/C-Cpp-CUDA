@@ -78,12 +78,11 @@ public:
 	CApplicatioLayer(ILayerHandler* pLayerhanler):AbstractLayer(pLayerhanler)
 	{
 
-
 	}	
 
 	virtual void Process(CPacket& packet) override
 	{
-		std::cout<<"nProcessing packet";
+		std::cout<<"\nProcessing packet";
 	}
 
 
@@ -124,7 +123,6 @@ public:
 		std::cout<<"\nProcessing packet";
 	}
 
-
 	virtual PROTOCOL_LAYER GetLayer() override
 	{
 		return TRANSPORT_LAYER;
@@ -147,7 +145,6 @@ public:
 		std::string str = "TRANSPORT-LAYER-TRAILER";		
 		std::copy(str.begin(), str.end(), std::back_inserter(m_Data));
 	}
-	
 };
 
 class CNetworkLayer : public AbstractLayer
@@ -163,7 +160,6 @@ public:
 	{
 		std::cout<<"\nProcessing packet";
 	}
-
 
 	virtual PROTOCOL_LAYER GetLayer() override
 	{
@@ -187,12 +183,10 @@ public:
 		std::string str = "NETWORK-LAYER-TRAILER";		
 		std::copy(str.begin(), str.end(), std::back_inserter(m_Data));
 	}
-
 };
 
 class CLinkLayer : public AbstractLayer
 {
-
 public:
 	CLinkLayer(ILayerHandler* pLayerhanler):AbstractLayer(pLayerhanler)
 	{
@@ -203,7 +197,6 @@ public:
 	{
 		std::cout<<"\nProcessing packet";
 	}
-
 
 	virtual PROTOCOL_LAYER GetLayer() override
 	{
@@ -231,19 +224,16 @@ public:
 
 class CPhysicalLayer : public AbstractLayer
 {
-
 public:
 	CPhysicalLayer(ILayerHandler* pLayerhanler):AbstractLayer(pLayerhanler)
 	{
-
 
 	}
 	
 	virtual void Process(CPacket& packet) override
 	{
-		std::cout<<"nProcessing packet";
+		std::cout<<"\nProcessing packet\n";
 	}
-
 
 	virtual PROTOCOL_LAYER GetLayer() override
 	{

@@ -1,12 +1,11 @@
 #include "ProtocolStack.h"
 #include "LayerImpl.h"
-
+#include "profiler.h"
 
 CProtocolStack::CProtocolStack()
 {
 	CreateStack();
 }
-
 
 CProtocolStack::~CProtocolStack()
 {
@@ -38,13 +37,15 @@ void CProtocolStack::CreateStack()
 
 void CProtocolStack::Send( CPacket& packet )
 {
+	PROFILE_FUNCTION;
 	GetLayer(APPLICATION_LAYER)->Send(packet);
-
 }
 
 void CProtocolStack::Recv( CPacket& packet )
 {
+	PROFILE_FUNCTION;
 	GetLayer(PHYSICAL_LAYER)->Recv(packet);
+	std::cout << std::endl;
 }
 
 ILayer* CProtocolStack::GetLowerLayer( PROTOCOL_LAYER layer )
@@ -58,7 +59,6 @@ ILayer* CProtocolStack::GetLowerLayer( PROTOCOL_LAYER layer )
 	  pLayer = m_Layers[layer-1];
 	  break;
   }
-
   return pLayer;
 }
 
@@ -73,7 +73,6 @@ ILayer* CProtocolStack::GetUpperLayer( PROTOCOL_LAYER layer )
 		pLayer = m_Layers[layer+1];
 		break;
 	}
-
 	return pLayer;
 }
 
@@ -103,7 +102,6 @@ std::string CProtocolStack::GetLayerName( PROTOCOL_LAYER layer )
 			sLayer ="Application Layer";
 			break;
 	}
-
 	return sLayer;
 }
 

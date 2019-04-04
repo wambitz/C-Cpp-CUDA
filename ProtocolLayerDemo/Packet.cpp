@@ -16,7 +16,6 @@ void CPacket::Print( vector<BYTE>& data )
 	{
 		std::cout<<data[nIndex];
 	}
-
 }
 
 CPacket::CPacket():m_nOffset(0)
