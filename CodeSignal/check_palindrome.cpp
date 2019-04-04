@@ -1,9 +1,11 @@
 
 #include <string>
 #include <iostream>
+#include "profiler.h"
 
 bool checkPalindrome(std::string inputString) 
 {
+    PROFILE_FUNCTION;
     int i = 0;
     int j = inputString.size() - 1;
     
