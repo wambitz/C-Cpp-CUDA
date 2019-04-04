@@ -226,6 +226,7 @@ orleans.codegen.cs
 *.txt
 *.csv
 *.bin
+gperftools/
 
 
 # Including strong name files can present a security risk
@@ -381,6 +382,7 @@ MigrationBackup/
 *.out
 *.app
 
+# CMake
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
