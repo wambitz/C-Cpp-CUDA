@@ -7,9 +7,11 @@
             "label": "GCC BOOST",
             "type": "shell",
             "command": "g++.exe",
-            "args" : [
-                "-Wall", "-g", "-IC:/boost_1_69_0", "${file}"
-                // "-Wall", "-g", "Tmp/*.cpp -o"
+            "args": [
+                "-Wall",
+                "-g",
+                "-IC:/boost_1_69_0",
+                "${file}"
             ],
             "group": {
                 "kind": "build",
@@ -20,9 +22,10 @@
             "label": "GCC Builder",
             "type": "shell",
             "command": "g++.exe",
-            "args" : [
-                "-Wall", "-g", "${file}"
-                // "-Wall", "-g", "Tmp/*.cpp -o"
+            "args": [
+                "-Wall",
+                "-g",
+                "${file}"
             ],
             "group": {
                 "kind": "build",
@@ -33,8 +36,29 @@
             "label": "Clang Builder",
             "type": "shell",
             "command": "C:/LLVM/build/bin/clang++.exe",
-            "args" : [
-                "-Wall", "-g", "${file}"
+            "args": [
+                "-Wall",
+                "-g",
+                "${file}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Clang-Tidy Analizer",
+            "type": "shell",
+            "command": "C:/LLVM/build/bin/clang-tidy.exe",
+            "args": [
+                "-header-filter=.*",
+                "-checks=modernize-*",
+                "${file}",
+                "--",
+                "std=c++14"
             ],
             "group": {
                 "kind": "build",
@@ -42,20 +66,32 @@
             }
         },
         {
-            "label": "Clang-Tidy Analizer",
+            "label": "nvcc",
             "type": "shell",
-            "command": "C:/LLVM/build/bin/clang-tidy.exe",
-            "args" : [
-                // "-checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus*", "${file}", "--", "std=c++14"
-                // "-header-filter=.*", "-system-headers", "-checks=modernize-*", "${file}", "--", "std=c++14", ">log.txt"
-                // "-header-filter=.* -checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus* -checks=modernize-*", "${file}", "--",  "std=c++14"
-                "-header-filter=.*", "-checks=modernize-*",  "${file}", "--",  "std=c++14"
+            "command": "nvcc.exe",
+            "args": [
+                "-gencode=arch=compute_35,code=\\\"sm_35,compute_35\\\"", //This option provides a generalization of the --gpu-architecture=arch --gpu-code=code,... option combination for specifying nvcc behavior with respect to code generation.
+                // "--use-local-env",
+                // Specify the directory in which the compiler executable resides.
+                "-ccbin", "C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/VC/Tools/MSVC/14.16.27023/bin/HostX86/x64", 
+                "-g",               // Generate debug information for host code.
+                "-x", "cu",         // Explicitly specify the language for the input files, rather than letting the compiler choose a default based on the file name suffix.
+                "-G",               // Generate debug information for device code
+                "-maxrregcount=0",  // Specify the maximum amount of registers that GPU functions can use 
+                "--keep-dir",  "./CUDA/Debug/",
+                "--machine", "64",  // Specify 32-bit vs. 64-bit architecture
+                // "--compile",        // Compile each .c, .cc, .cpp, .cxx, and .cu input file into an object file.
+                "-cudart", "static",// Specify the type of CUDA runtime library to be used: no CUDA runtime library, shared/dynamic CUDA runtime library, or static CUDA runtime library
+                "-DWIN32", "-DWIN64", "-D_DEBUG", "-D_CONSOLE", "-D_MBCS", // Define macros to be used during preprocessing.
+                "-Xcompiler", "/EHsc /W3 /nologo /Od /Fd./CUDA/Debug/vc141.pdb /FS /Zi /RTC1 /MDd ", // Specify options directly to the compiler/preprocessor.
+                "-o", "./CUDA/Debug/${fileBasenameNoExtension}", // Specify name and location of the output file.
+                "${file}",
+                // "-clean"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
         }
-
     ]
 }
