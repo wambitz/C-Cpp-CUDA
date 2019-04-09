@@ -29,6 +29,24 @@ __global__ void unique_gid_calculation_2d(int * input)
 		blockIdx.x, blockIdx.y, tid, gid, input[gid]);
 }
 
+// This function allows to calculate unique index for all elements no matter the block it belongs to
+__global__ void unique_gid_calculation_2d_2d(int * data)
+{
+	// For a grid of 4 blocks with 4 threads each
+	int tid = blockDim.x * threadIdx.y + threadIdx.x;		// tid	  -> Is the thread id within a block
+
+	int num_threads_in_block = blockDim.x * blockDim.y;
+	int block_offset = blockIdx.x * num_threads_in_block;	// offset -> blockId.x [0~3] * block dim.x = 4
+
+	int num_threads_in_row =  num_threads_in_block * gridDim.x;
+	int row_offset = num_threads_in_row * blockIdx.y;
+	 
+	int gid = tid + row_offset + block_offset; // gid    -> id in block + row_offset + block_offset
+	printf("blockIdx.x: %d, blockIdx.y: %d, threadIdx.x: %d, gid: %d - data: %d \n",
+		blockIdx.x, blockIdx.y, tid, gid, data[gid]);
+}
+
+
 int main()
 {
 	int array_size = 16;
@@ -45,10 +63,11 @@ int main()
 	cudaMalloc((void**)&d_data, array_byte_size);
 	cudaMemcpy(d_data, h_data, array_byte_size, cudaMemcpyHostToDevice);
 
-	dim3 block(4);
+	dim3 block(2,2);
 	dim3 grid(2, 2);
-
-	unique_gid_calculation_2d << < grid, block >> > (d_data);
+	
+	unique_gid_calculation_2d_2d << < grid, block >> > (d_data);
+	// unique_gid_calculation_2d << < grid, block >> > (d_data);
 	// unique_idx_calc_threadIdx << < grid, block >> > (d_data);
 	cudaDeviceSynchronize();
 
