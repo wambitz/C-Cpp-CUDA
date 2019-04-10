@@ -12,9 +12,19 @@ __global__ void mem_trs_test(int * input)
     printf("tid: %d, gid: %d, value: %d \n", threadIdx.x, gid, input[gid]);
 }
 
+__global__ void mem_trs_test2(int * input, int size)
+{
+    int gid = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (gid < size)
+    {
+    printf("tid: %d, gid: %d, value: %d \n", threadIdx.x, gid, input[gid]);
+    }
+}
+
 int main()
 {
-    int size = 128; // array size
+    int size = 150; // array size
     int byte_size = size * sizeof(int); // complete array byte size
 
     int * h_input;  // host memory pointer
@@ -32,10 +42,10 @@ int main()
 
     cudaMemcpy(d_input, h_input, byte_size, cudaMemcpyHostToDevice); // memory cpy from host to device
 
-    dim3 block(64); // 64 threads in x dimesion for each block
-    dim3 grid(2);   // 2 blocks in x for whole grid
+    dim3 block(32); // 64 threads in x dimesion for each block
+    dim3 grid(5);   // 2 blocks in x for whole grid
 
-    mem_trs_test << < grid, block >> >(d_input);
+    mem_trs_test2 << < grid, block >> >(d_input, size); // Now threas are limited in size 
     
     cudaDeviceSynchronize();    // wait for device to finish kernel execution 
 
