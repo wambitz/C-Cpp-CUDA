@@ -9,13 +9,17 @@
 // for memset
 #include <cstring>
 
-__global__ void sum_array_gpu(int * a, int * b, int * c, int size)
+#define gpuErrChk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+
+inline void gpuAssert(cudaError_t code, const char* file, int line, bool abort = true)
 {
-    int gid = blockIdx.x * blockDim.x + threadIdx.x;
-    if (gid < size)
+    if (code != cudaSuccess)
     {
-        c[gid] = a[gid] + b[gid];
-        // printf("c[%d] -> %d = a[%d] -> %d + b[%d] -> %d \n", gid, c[gid], gid, a[gid], gid, b[gid]);
+        fprintf(stderr, "GPU Assert: %s %s %d \n", cudaGetErrorString(code), file, line);
+        if (abort)
+        {
+            exit(code);
+        }
     }
 }
 
@@ -24,6 +28,16 @@ void check_cuda_error(cudaError error)
     if (error != cudaSuccess)
     {
         fprintf(stderr, "Error: %s \n", cudaGetErrorString(error));
+    }
+}
+
+__global__ void sum_array_gpu(int * a, int * b, int * c, int size)
+{
+    int gid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (gid < size)
+    {
+        c[gid] = a[gid] + b[gid];
+        // printf("c[%d] -> %d = a[%d] -> %d + b[%d] -> %d \n", gid, c[gid], gid, a[gid], gid, b[gid]);
     }
 }
 
@@ -76,8 +90,8 @@ int main()
     int * d_c;
 
     check_cuda_error(cudaMalloc((void**)&d_a, NO_BYTES));
-    cudaMalloc((void**)&d_b, NO_BYTES);
-    cudaMalloc((void**)&d_c, NO_BYTES);
+    gpuErrChk(cudaMalloc((void**)&d_b, NO_BYTES));
+    gpuErrChk(cudaMalloc((void**)&d_c, NO_BYTES));
 
     // initialize host pointer
     time_t t;
