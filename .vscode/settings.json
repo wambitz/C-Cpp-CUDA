@@ -69,7 +69,26 @@
         "xlocbuf": "cpp",
         "xlocmes": "cpp",
         "xlocmon": "cpp",
-        "xloctime": "cpp"
+        "xloctime": "cpp",
     },
-    "C_Cpp.configurationWarnings": "Disabled"
+    "C_Cpp.configurationWarnings": "Disabled",
+
+    // CUDA Extension Collor config
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "support.function.cuda-cpp",
+                "settings":{
+                    "foreground": "#56b6c2"
+                }
+            },
+            {
+                "scope": "keyword.function.qualifier.cuda-cpp",
+                "settings":{
+                    "foreground": "#56b6c2"
+                }
+            }
+        ]
+    }
+    
 }

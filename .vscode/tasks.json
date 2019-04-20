@@ -82,6 +82,7 @@
                 "--machine", "64",  // Specify 32-bit vs. 64-bit architecture
                 // "--compile",        // Compile each .c, .cc, .cpp, .cxx, and .cu input file into an object file.
                 "-cudart", "static",// Specify the type of CUDA runtime library to be used: no CUDA runtime library, shared/dynamic CUDA runtime library, or static CUDA runtime library
+                "-lcurand",
                 "-DWIN32", "-DWIN64", "-D_DEBUG", "-D_CONSOLE", "-D_MBCS", // Define macros to be used during preprocessing.
                 "-Xcompiler", "/EHsc /W3 /nologo /Od /Fd./CUDA/Debug/vc141.pdb /FS /Zi /RTC1 /MDd ", // Specify options directly to the compiler/preprocessor.
                 "-o", "./CUDA/Debug/${fileBasenameNoExtension}", // Specify name and location of the output file.
