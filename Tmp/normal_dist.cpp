@@ -99,3 +99,17 @@ int main()
 //                   << p.first << ' ' << std::string(p.second/200, '*') << '\n';
 //     }
 // }
+
+// void AddGaussianNoiseToPixel(std::array<short int, N_SLICES>& pixel_array, const std::array<short int, N_SLICES>& reference_pixel)
+// {
+//     // Define random generator with Gaussian distribution
+//     const float mean   = 0.0;
+//     const float stddev = 2.0;
+//     auto dist = std::bind(std::normal_distribution<float>{mean, stddev},
+//                           std::mt19937(std::random_device{}()));
+
+//     for (const auto& slice : reference_pixel) 
+//     {
+//         pixel_array[&slice-&reference_pixel[0]] = rint(slice+dist());
+//     }
+// }
