@@ -66,7 +66,7 @@ struct Scanner : IScanner
     };
 };
 
-struct Priner : IPrinter
+struct Printer : IPrinter
 {
     void print(Document& doc) override 
     {
