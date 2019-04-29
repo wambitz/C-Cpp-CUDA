@@ -31,7 +31,7 @@ void CProtocolStack::CreateStack()
 	pLayer = new CTransportLayer(this);
 	m_Layers.push_back(pLayer);
 
-	pLayer = new CApplicatioLayer(this);
+	pLayer = new CApplicationLayer(this);
 	m_Layers.push_back(pLayer);
 }
 
