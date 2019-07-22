@@ -226,6 +226,7 @@ orleans.codegen.cs
 *.txt
 *.csv
 *.bin
+*.data
 gperftools/
 
 
