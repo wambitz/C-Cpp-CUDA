@@ -9,7 +9,7 @@ void foo()
     printf("Hello from foo - %d \n", std::this_thread::get_id());
 }
 
-class callable_class
+class callable_classx
 {
 public:
     void operator()()
@@ -20,6 +20,7 @@ public:
 
 void run()
 {
+    // NOTE: Calling default constructor from a thread return zero ID, same case after calling join on a thread
     std::thread t1(foo);
     callable_class obj;
     std::thread t2(obj);

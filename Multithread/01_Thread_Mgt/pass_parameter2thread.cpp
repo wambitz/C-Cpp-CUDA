@@ -21,6 +21,11 @@ void f2(int &x)
 
 void run()
 {
+    // int p = 9;
+    // int q = 8;
+
+    // std::thread t1(f1, p, q);
+
     int x = 9;
     cout << "Main thread value of x: " << x << "; TID: " << std::this_thread::get_id() << endl;
 
