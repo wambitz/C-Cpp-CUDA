@@ -139,7 +139,7 @@ int main()
     Product tree {"Three", Color::green, Size::large};
     Product house{"House", Color::blue , Size::large};
 
-    vector<Product *> items {&apple, &tree, &house};
+    vector<Product *> items {&apple, &tree, &house}; 
     // ProductFilter pf;
 
     // auto green_things = pf.by_color(items, Color::green);
