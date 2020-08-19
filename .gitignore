@@ -396,3 +396,6 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 build/
+Tmp
+cplusplus-advanced-source-code
+design-patterns-cpp-creational
